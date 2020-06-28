@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dingding.rbac.dao.EmpDao">
+
+    <resultMap id="BaseResultMap" type="com.dingding.rbac.entity.Emp">
+        <!--@Table emp-->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+        <result property="deptNo" column="dept_no" jdbcType="INTEGER"/>
+        <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="attr1" column="attr1" jdbcType="VARCHAR"/>
+        <result property="userPng" column="user_png" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="EmpBaseResultMap" type="com.dingding.rbac.entity.Emp" extends="BaseResultMap">
+        <association property="createUser" javaType="com.dingding.rbac.entity.Emp">
+            <result column="create_username" property="username"></result>
+        </association>
+        <association property="updateUser" javaType="com.dingding.rbac.entity.Emp">
+            <result column="update_username" property="username"></result>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultType="com.dingding.rbac.entity.Emp">
+        select
+          *
+        from rbac.emp
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="EmpBaseResultMap">
+        select e.*,
+        (
+            select cu.username from emp cu where cu.id = e.create_user
+        ) as create_username
+        ,
+        (
+            select up.username from emp up where up.id = e.update_user
+        ) as update_username
+        from emp e
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          id, username, password, sex, email, mobile, dept_no, birthday, create_time, create_user, attr1, user_png
+        from rbac.emp
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sex != null and sex != ''">
+                and sex = #{sex}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="mobile != null and mobile != ''">
+                and mobile = #{mobile}
+            </if>
+            <if test="deptNo != null">
+                and deptNo = #{deptNo}
+            </if>
+            <if test="birthday != null">
+                and birthday = #{birthday}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="createUser != null">
+                and create_user = #{createUser}
+            </if>
+            <if test="attr1 != null and attr1 != ''">
+                and attr1 = #{attr1}
+            </if>
+            <if test="userPng != null and userPng != ''">
+                and user_png = #{userPng}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into rbac.emp(username, password, sex, email, mobile, dept_no, birthday, create_time, create_user, attr1, user_png)
+        values (#{username}, #{password}, #{sex}, #{email}, #{mobile}, #{deptNo}, #{birthday}, #{createTime}, #{createUser}, #{attr1}, #{userPng})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update rbac.emp
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="mobile != null and mobile != ''">
+                mobile = #{mobile},
+            </if>
+            <if test="deptNo != null">
+                deptNo = #{deptNo},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser},
+            </if>
+            <if test="attr1 != null and attr1 != ''">
+                attr1 = #{attr1},
+            </if>
+            <if test="userPng != null and userPng != ''">
+                user_png = #{userPng},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from rbac.emp where id = #{id}
+    </delete>
+
+    <select id="getEmpList" resultMap="EmpBaseResultMap">
+        select e.*,
+        (
+            select cu.username from emp cu where cu.id = e.create_user
+        ) as create_username
+        ,
+        (
+            select up.username from emp up where up.id = e.update_user
+        ) as update_username
+        from emp e
+    </select>
+</mapper>
